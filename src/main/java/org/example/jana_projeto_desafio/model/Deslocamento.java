@@ -1,6 +1,10 @@
 package org.example.jana_projeto_desafio.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.jana_projeto_desafio.enums.Periodo;
 import org.example.jana_projeto_desafio.enums.Status;
 
@@ -8,6 +12,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Deslocamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
