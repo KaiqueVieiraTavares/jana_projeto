@@ -20,7 +20,8 @@ public class RecursoController {
         this.recursoService = recursoService;
     }
     public ResponseEntity<RecursoResponseDTO> createRecurso(RecursoCreateDTO recursoCreateDTO){
-        var recursoCriadoDto = recursoService.createRecurso() // preciso fazer metodo para pegar o userId e tirar o param do service (userId)
+        var recursoCriadoDto = recursoService.createRecurso(recursoCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recursoCriadoDto);
     }
     @GetMapping("/{recursoId}")
     public ResponseEntity<RecursoResponseDTO> getRecurso(@PathVariable Integer recursoId) {

@@ -8,6 +8,7 @@ import org.example.jana_projeto_desafio.exceptions.usuario.UsuarioNaoEncontradoE
 import org.example.jana_projeto_desafio.model.Recurso;
 import org.example.jana_projeto_desafio.repostiories.RecursoRepository;
 import org.example.jana_projeto_desafio.repostiories.UsuarioRepository;
+import org.example.jana_projeto_desafio.security.SecurityUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,9 @@ public class RecursoService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public RecursoResponseDTO createRecurso(Integer userId, RecursoCreateDTO recursoCreateDTO){
-        Recurso recursoEntity = modelMapper.map(recursoCreateDTO, Recurso.class);
-        var user = usuarioRepository.findById(userId).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario com id: " + userId + " não encontrado!"));
+    public RecursoResponseDTO createRecurso (RecursoCreateDTO recursoCreateDTO){
+        Integer idUsuario = SecurityUtils.getUserId();
+        Recurso recursoEntity = modelMapper.map(recursoCreateDTO, Recurso.class);var user = usuarioRepository.findById(userId).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario com id: " + userId + " não encontrado!"));
         recursoEntity.setUsuario(user);
         var savedRecursoEntity = recursoRepository.save(recursoEntity);
         return modelMapper.map(savedRecursoEntity, RecursoResponseDTO.class);
