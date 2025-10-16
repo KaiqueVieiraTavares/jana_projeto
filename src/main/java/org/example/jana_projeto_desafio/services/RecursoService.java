@@ -31,7 +31,8 @@ public class RecursoService {
     @Transactional
     public RecursoResponseDTO createRecurso (RecursoCreateDTO recursoCreateDTO){
         Integer idUsuario = SecurityUtils.getUserId();
-        Recurso recursoEntity = modelMapper.map(recursoCreateDTO, Recurso.class);var user = usuarioRepository.findById(userId).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario com id: " + userId + " não encontrado!"));
+        Recurso recursoEntity = modelMapper.map(recursoCreateDTO, Recurso.class);var user = usuarioRepository.findById
+                (idUsuario).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario com id: " + idUsuario + " não encontrado!"));
         recursoEntity.setUsuario(user);
         var savedRecursoEntity = recursoRepository.save(recursoEntity);
         return modelMapper.map(savedRecursoEntity, RecursoResponseDTO.class);
@@ -45,6 +46,7 @@ public class RecursoService {
     public List<RecursoResponseDTO> getAllRecursos(){
         return recursoRepository.findAll().stream().map(recurso -> modelMapper.map(recurso, RecursoResponseDTO.class)).toList();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteRecurso(Integer recursoId){
         Recurso recurso = recursoRepository.findById(recursoId).orElseThrow(() -> new RecursoNaoEncontradoException

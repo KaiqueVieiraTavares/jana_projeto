@@ -12,4 +12,6 @@ public interface LocalRepository extends JpaRepository<Local, Integer> {
     Integer local(String local);
 
     List<Local> local(String local);
+
+    List<Local> local(String local);
 }
