@@ -6,7 +6,7 @@ import org.example.jana_projeto_desafio.repostiories.UsuarioRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.AccessDeniedException;
+
 
 @Component
 public class SecurityUtils {

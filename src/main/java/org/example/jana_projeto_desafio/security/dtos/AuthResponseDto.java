@@ -1,12 +1,13 @@
 package org.example.jana_projeto_desafio.security.dtos;
 
+
 import org.example.jana_projeto_desafio.enums.Perfil;
 
-public record UsuarioResponseDTO(
+public record AuthResponseDto(
         Integer id,
-        Integer matricula,
         String nome,
+        int matricula,
         String email,
         Perfil perfil,
-        String localNome
+        String token
 ) {}

@@ -3,6 +3,7 @@ package org.example.jana_projeto_desafio.services;
 import org.example.jana_projeto_desafio.dtos.agendamento.AgendamentoCreateDTO;
 import org.example.jana_projeto_desafio.dtos.agendamento.AgendamentoResponseDTO;
 import org.example.jana_projeto_desafio.dtos.agendamento.AgendamentoUpdateDTO;
+import org.example.jana_projeto_desafio.dtos.registro.RegistroCreateDTO;
 import org.example.jana_projeto_desafio.exceptions.agendamento.AgendamentoJaExisteException;
 import org.example.jana_projeto_desafio.exceptions.agendamento.AgendamentoNaoEncontradoException;
 import org.example.jana_projeto_desafio.exceptions.local.LocalNaoEncontradoException;
@@ -33,12 +34,14 @@ public class AgendamentoService {
     private final RecursoRepository recursoRepository;
     private final LocalRepository localRepository;
     private final UsuarioRepository usuarioRepository;
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, ModelMapper modelMapper, RecursoRepository recursoRepository, LocalRepository localRepository, UsuarioRepository usuarioRepository) {
+    private final RegistroService registroService;
+    public AgendamentoService(AgendamentoRepository agendamentoRepository, ModelMapper modelMapper, RecursoRepository recursoRepository, LocalRepository localRepository, UsuarioRepository usuarioRepository, RegistroService registroService) {
         this.agendamentoRepository = agendamentoRepository;
         this.modelMapper = modelMapper;
         this.recursoRepository = recursoRepository;
         this.localRepository = localRepository;
         this.usuarioRepository = usuarioRepository;
+        this.registroService = registroService;
     }
 
 
@@ -51,7 +54,7 @@ public class AgendamentoService {
                 new RecursoNaoEncontradoException("Recurso com id: " + agendamentoCreateDTO.recursoId() + " não encontrado!"));
         Local local = localRepository.findById(agendamentoCreateDTO.localId()).orElseThrow(()-> new LocalNaoEncontradoException
                 ("Local com id: " + agendamentoCreateDTO.localId() + " não encontrado!"));
-
+        //verificar se o recurso já foi agendado na data especifica
         agendamentoRepository.findAgendamentoByRecursoAndDataReservada(
                 recurso, agendamentoCreateDTO.dataReservada()).ifPresent(a -> {
             throw new AgendamentoJaExisteException("Já existe um agendamento na data: " + agendamentoCreateDTO.dataReservada() + "!");
@@ -60,6 +63,9 @@ public class AgendamentoService {
         Agendamento agendamento = Agendamento.builder().recurso(recurso).local(local).dataReservada(agendamentoCreateDTO.dataReservada()).usuario(usuario).build();
 
         var savedAgendamento = agendamentoRepository.save(agendamento);
+        //registrar um agendamento
+        RegistroCreateDTO registroCreateDTO = new RegistroCreateDTO(usuarioId, agendamentoCreateDTO.recursoId(), agendamentoCreateDTO.localId(),savedAgendamento.getAgendamentoId(), true, "Agendamento criado com sucesso!");
+        registroService.createRegistro(registroCreateDTO);
         return modelMapper.map(savedAgendamento, AgendamentoResponseDTO.class);
     }
     @PreAuthorize("hasRole('ADMIN') or @securityUtils.ehDonoDoAgendamento(#agendamentoId)")
