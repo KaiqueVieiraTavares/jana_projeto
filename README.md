@@ -13,6 +13,7 @@
   - Spring Web
   - Spring DevTools
   - Spring Security
+  - Validation
   - JJWT
   - Spring Test
   - ModelMapper
