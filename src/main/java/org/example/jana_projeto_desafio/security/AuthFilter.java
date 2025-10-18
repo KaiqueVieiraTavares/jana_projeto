@@ -16,6 +16,7 @@ import java.io.IOException;
 public class AuthFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
     private final UserDetailsService userDetailsService;
+
     public AuthFilter(TokenService tokenService, UserDetailsService userDetailsService) {
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
@@ -33,16 +34,22 @@ public class AuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (RuntimeException e) {
+                // É melhor não escrever no response aqui, pois a cadeia de exceções do Spring Security cuidará disso.
+                // Apenas limpar o contexto é suficiente.
+                SecurityContextHolder.clearContext();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token invalido!" + e.getMessage());
+                response.getWriter().write("Token inválido ou expirado: " + e.getMessage());
                 return;
             }
         }
         filterChain.doFilter(request, response);
     }
+
+
+
     private String extractToken(HttpServletRequest request){
         String authHeader = request.getHeader("Authorization");
-        if(authHeader!=null && authHeader.startsWith("Bearer ")){
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
             return authHeader.replace("Bearer ", "");
         }
         return null;
